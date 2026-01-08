@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание уроков</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f9ff;
+            color: #333;
+        }
+        
+        .print-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #4a6fa5;
+        }
+        
+        .print-header h1 {
+            color: #2c3e6d;
+            margin-bottom: 10px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+        }
+        
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        
+        .schedule-table th {
+            background-color: #4a6fa5;
+            color: white;
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: 600;
+            border: 1px solid #3a5a8a;
+        }
+        
+        .schedule-table td {
+            padding: 12px 10px;
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+        
+        .lesson-number {
+            font-weight: bold;
+            color: #2c3e6d;
+            width: 40px;
+        }
+        
+        .lesson-name {
+            padding-left: 10px;
+        }
+        
+        .day-column {
+            width: 20%;
+        }
+        
+        .activities-section {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px dashed #4a6fa5;
+        }
+        
+        .activities-title {
+            color: #2c3e6d;
+            margin-bottom: 15px;
+        }
+        
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .activity-item {
+            background-color: #f0f7ff;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #4a6fa5;
+        }
+        
+        .print-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        
+        button {
+            background-color: #4a6fa5;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #3a5a8a;
+        }
+        
+        @media print {
+            .print-controls {
+                display: none;
+            }
+            
+            body {
+                background-color: white;
+                padding: 10px;
+            }
+            
+            .container {
+                box-shadow: none;
+                padding: 0;
+            }
+            
+            .schedule-table th {
+                background-color: #4a6fa5 !important;
+                -webkit-print-color-adjust: exact;
+                color: white !important;
+            }
+        }
+        
+        .empty-cell {
+            background-color: #f9f9f9;
+        }
+        
+        .footer-note {
+            text-align: center;
+            margin-top: 25px;
+            color: #666;
+            font-size: 14px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="print-header">
+            <h1>Расписание уроков</h1>
+            <p>Школьное расписание на неделю</p>
+        </div>
+<table class="schedule-table">
+            <thead>
+                <tr>
+                    <th class="day-column">Понедельник</th>
+                    <th class="day-column">Вторник</th>
+                    <th class="day-column">Среда</th>
+                    <th class="day-column">Четверг</th>
+                    <th class="day-column">Пятница</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Урок 1 -->
+                <tr>
+                    <td>
+                        <div class="lesson-number">1.</div>
+                        <div class="lesson-name">Разговор о важном</div>
+                    </td>
+                    <td>
+                        <div class="lesson-number">1.</div>
+                        <div class="lesson-name">Математика</div>
+                    </td>
+                    <td>
+                        <div class="lesson-number">1.</div>
+                        <div class="lesson-name">Физ-ра</div>
+                    </td>
+                    <td>
+                        <div class="lesson-number">1.</div>
+                        <div class="lesson-name">Математика</div>
+                    </td>
+                    <td>
+                        <div class="lesson-number">1.</div>
+                        <div class="lesson-name">Музыка</div>
+                    </td>
+                </tr>
+                
+                <!-- Урок 2 -->
+                <tr>
+                    <td>
+                        <div class="lesson-number">2.</div>
+                        <div class="lesson-name">Математика</div>
+                    </td>
+                    <td>
+                        <div class="lesson-number">2.</div>
+                        <div class="lesson-name">Русский язык</div>
+                    </td>
+                    <td>
+                        <div class="lesson-number">2.</div>
+                        <div class="lesson-name">Русский язык</div>
+                    </td>
+                    <td>
+                        <div class="lesson-number">2.</div>
+                        <div class="lesson-name">Русский язык</div>
+                    </td>
+                    <td>
+                        <div class="lesson-number">2.</div>
+                        <div class="lesson-name">Физ-ра</div>
+                    </td>
+                </tr>
+                
+                <!-- Урок 3 -->
+                <tr>
+                    <td>
+                        <div class="lesson-number">3.</div>
+                        <div class="lesson-name">Русский язык</div>
+                    </td>
+                    <td>
+                        <div class="lesson-number">3.</div>
+                        <div class="lesson-name">Окружающий</div>
+                    </td>
+                    <td>
+                        <div class="lesson-number">3.</div>
+                        <div class="lesson-name">Чтение</div>
+                    </td>
+                    <td>
+                        <div class="lesson-number">3.</div>
+                        <div class="lesson-name">Окружающий</div>
+                    </td>
+                    <td>
+                        <div class="lesson-number">3.</div>
+                        <div class="lesson-name">Математика</div>
+                    </td>
+                </tr>
+                
+                <!-- Урок 4 -->
+                <tr>
+                    <td>
+                        <div class="lesson-number">4.</div>
+                        <div class="lesson-name">Чтение</div>
+                    </td>
+                    <td>
+                        <div class="lesson-number">4.</div>
+                        <div class="lesson-name">Чтение</div>
+                    </td>
+                    <td>
+                        <div class="lesson-number">4.</div>
+                        <div class="lesson-name">ИЗО</div>
+                    </td>
+                    <td>
+                        <div class="lesson-number">4.</div>
+                        <div class="lesson-name">Чтение</div>
+</td>
+                    <td>
+                        <div class="lesson-number">4.</div>
+                        <div class="lesson-name">Русский</div>
+                    </td>
+                </tr>
+                
+                <!-- Урок 5 -->
+                <tr>
+                    <td>
+                        <div class="lesson-number">5.</div>
+                        <div class="lesson-name">Труд</div>
+                    </td>
+                    <td>
+                        <div class="lesson-number">5.</div>
+                        <div class="lesson-name">Кубановедение</div>
+                    </td>
+                    <td class="empty-cell"></td>
+                    <td class="empty-cell"></td>
+                    <td class="empty-cell"></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="activities-section">
+            <h2 class="activities-title">Внеурочные занятия</h2>
+            <div class="activities-grid">
+                <div class="activity-item">Лёгкая атлетика</div>
+                <div class="activity-item">Футбол</div>
+                <div class="activity-item">Футбол</div>
+                <div class="activity-item">Вокал</div>
+                <div class="activity-item">Лёгкая атлетика</div>
+                <div class="activity-item">Футбол</div>
+            </div>
+        </div>
+        
+        <div class="footer-note">
+            Расписание может быть изменено. Актуальная информация у классного руководителя.
+        </div>
+        
+        <div class="print-controls">
+            <button onclick="window.print()">Печать расписания</button>
+            <button onclick="saveAsPDF()">Сохранить как PDF</button>
+        </div>
+    </div>
+
+    <script>
+        // Функция для сохранения как PDF (используем браузерную печать в PDF)
+        function saveAsPDF() {
+            window.print();
+        }
+        
+        // Добавляем возможность нажатия Enter для печати
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+                window.print();
+            }
+        });
+        
+        // Подсветка текущего дня недели
+        document.addEventListener('DOMContentLoaded', function() {
+            const days = ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'];
+            const today = new Date().getDay();
+            
+            // Преобразуем дни недели в индексы таблицы (понедельник = 0)
+            const dayIndex = today === 0 ? 6 : today - 1;
+            
+            // Подсветка столбца текущего дня (если это рабочий день)
+            if (dayIndex >= 0 && dayIndex <= 4) {
+                const table = document.querySelector('.schedule-table');
+                const rows = table.querySelectorAll('tr');
+                
+                rows.forEach(row => {
+                    const cell = row.cells[dayIndex];
+                    if (cell) {
+                        cell.style.backgroundColor = '#e8f4ff';
+                        cell.style.fontWeight = 'bold';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
