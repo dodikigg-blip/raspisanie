@@ -154,6 +154,110 @@
             font-size: 14px;
             font-style: italic;
         }
+        
+        /* Стили для QR-кода */
+        .qr-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 25px;
+margin: 30px 0;
+            border: 2px solid #4a6fa5;
+            text-align: center;
+        }
+        
+        .qr-section h3 {
+            color: #2c3e6d;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .qr-code-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        
+        #qrCodeImage {
+            width: 200px;
+            height: 200px;
+            border: 3px solid white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 10px;
+            background: white;
+        }
+        
+        .qr-instructions {
+            text-align: left;
+            max-width: 300px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .qr-instructions ol {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        
+        .qr-instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .qr-links {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed #ccc;
+        }
+        
+        .site-link {
+            color: #2c3e6d;
+            font-weight: bold;
+            text-decoration: none;
+            word-break: break-all;
+            display: inline-block;
+            margin: 0 10px;
+        }
+        
+        .site-link:hover {
+            text-decoration: underline;
+        }
+        
+        .copy-btn {
+            background-color: #4a6fa5;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+            transition: background-color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .copy-btn:hover {
+            background-color: #3a5a8a;
+        }
+        
+        @media (max-width: 768px) {
+            .qr-code-container {
+                flex-direction: column;
+            }
+            
+            .qr-instructions {
+                max-width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -162,7 +266,8 @@
             <h1>Расписание уроков</h1>
             <p>Школьное расписание на неделю</p>
         </div>
-<table class="schedule-table">
+        
+        <table class="schedule-table">
             <thead>
                 <tr>
                     <th class="day-column">Понедельник</th>
@@ -196,8 +301,7 @@
                         <div class="lesson-name">Музыка</div>
                     </td>
                 </tr>
-                
-                <!-- Урок 2 -->
+<!-- Урок 2 -->
                 <tr>
                     <td>
                         <div class="lesson-number">2.</div>
@@ -262,7 +366,7 @@
                     <td>
                         <div class="lesson-number">4.</div>
                         <div class="lesson-name">Чтение</div>
-</td>
+                    </td>
                     <td>
                         <div class="lesson-number">4.</div>
                         <div class="lesson-name">Русский</div>
@@ -297,6 +401,32 @@
                 <div class="activity-item">Футбол</div>
             </div>
         </div>
+<!-- QR-код секция -->
+        <div class="qr-section">
+            <h3><i class="fas fa-qrcode"></i> QR-код сайта</h3>
+            <p>Отсканируйте для быстрого доступа с телефона:</p>
+            
+            <div class="qr-code-container">
+                <img id="qrCodeImage" src="" alt="QR-код сайта">
+                <div class="qr-instructions">
+                    <p><strong>Как использовать:</strong></p>
+                    <ol>
+                        <li>Откройте камеру на телефоне</li>
+                        <li>Наведите на QR-код</li>
+                        <li>Нажмите на появившуюся ссылку</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="qr-links">
+                <p>Ссылка на сайт: 
+                    <a href="#" id="siteLink" class="site-link"></a>
+                    <button onclick="copyLink()" class="copy-btn">
+                        <i class="fas fa-copy"></i> Копировать
+                    </button>
+                </p>
+            </div>
+        </div>
         
         <div class="footer-note">
             Расписание может быть изменено. Актуальная информация у классного руководителя.
@@ -309,41 +439,66 @@
     </div>
 
     <script>
-        // Функция для сохранения как PDF (используем браузерную печать в PDF)
-        function saveAsPDF() {
-            window.print();
-        }
-        
-        // Добавляем возможность нажатия Enter для печати
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
-                window.print();
-            }
-        });
-        
-        // Подсветка текущего дня недели
+        // Простые интерактивные функции
         document.addEventListener('DOMContentLoaded', function() {
+            // Подсветка текущего дня
+            highlightCurrentDay();
+            
+            // Автоматически генерируем QR-код
+            const currentUrl = window.location.href;
+            
+            // Показываем ссылку
+            document.getElementById('siteLink').textContent = currentUrl;
+            document.getElementById('siteLink').href = currentUrl;
+            
+            // Генерируем QR-код через сервис QRServer
+            const qrCodeUrl = https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentUrl)}&format=png&margin=10&color=2c3e6d&bgcolor=f8f9fa;
+            
+            // Устанавливаем QR-код
+            document.getElementById('qrCodeImage').src = qrCodeUrl;
+            document.getElementById('qrCodeImage').alt = QR-код для ${currentUrl};
+        });
+
+        function highlightCurrentDay() {
             const days = ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'];
             const today = new Date().getDay();
-            
-            // Преобразуем дни недели в индексы таблицы (понедельник = 0)
             const dayIndex = today === 0 ? 6 : today - 1;
             
-            // Подсветка столбца текущего дня (если это рабочий день)
             if (dayIndex >= 0 && dayIndex <= 4) {
                 const table = document.querySelector('.schedule-table');
-                const rows = table.querySelectorAll('tr');
-                
-                rows.forEach(row => {
-                    const cell = row.cells[dayIndex];
-                    if (cell) {
-                        cell.style.backgroundColor = '#e8f4ff';
-                        cell.style.fontWeight = 'bold';
-                    }
-                });
+                if (table) {
+                    const rows = table.querySelectorAll('tr');
+                    rows.forEach(row => {
+                        const cell = row.cells[dayIndex];
+                        if (cell) {
+                            cell.style.backgroundColor = '#e8f4ff';
+                        }
+                    });
+                }
             }
-        });
+        }
+        
+        // Функция копирования ссылки
+        function copyLink() {
+            const link = window.location.href;
+            navigator.clipboard.writeText(link).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Скопировано!';
+                btn.style.backgroundColor = '#28a745';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.backgroundColor = '';
+                }, 2000);
+            });
+        }
+        
+        // Функция для сохранения как PDF
+        function saveAsPDF() {
+            alert('Для сохранения как PDF используйте Ctrl+P и выберите "Сохранить как PDF"');
+            window.print();
+        }
     </script>
 </body>
-
 </html>
