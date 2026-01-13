@@ -3,9 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Расписание уроков - Школа</title>
+    <title>Школьный органайзер - Умный помощник</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #4a6fa5;
+            --primary-dark: #2c3e6d;
+            --secondary: #28a745;
+            --light: #f8f9fa;
+            --dark: #333;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -14,287 +24,1078 @@
         }
         
         body {
-            background: #f5f9ff;
-            color: #333;
-            line-height: 1.6;
+            background: linear-gradient(135deg, #f5f9ff 0%, #e6f0ff 100%);
+            color: var(--dark);
             min-height: 100vh;
-            padding: 20px;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        
-        .site-header {
-            background: #2c3e6d;
-            color: white;
             padding: 20px;
-            text-align: center;
         }
         
-        .site-header h1 {
-            font-size: 2rem;
-            margin-bottom: 10px;
+        /* Шапка */
+        header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 25px 30px;
+            border-radius: 15px 15px 0 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
         
-        .main-nav {
-            background-color: #4a6fa5;
-            padding: 10px 0;
+        .header-content {
             display: flex;
-            justify-content: center;
-            gap: 15px;
+            justify-content: space-between;
+            align-items: center;
             flex-wrap: wrap;
+            gap: 20px;
         }
         
-        .main-nav a {
-            color: white;
-            text-decoration: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: background-color 0.3s;
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
         
-        .main-nav a:hover {
-            background-color: rgba(255, 255, 255, 0.2);
+        .logo h1 {
+            font-size: 2.2rem;
         }
         
-        .main-content {
-            padding: 20px;
+        .logo i {
+            font-size: 2.5rem;
+            color: #ffcc00;
         }
         
+        .date-display {
+            text-align: right;
+        }
+        
+        .current-date {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        .current-time {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        /* Навигация */
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab:hover {
+            background-color: #f0f7ff;
+        }
+        
+        .tab.active {
+            background-color: #e8f4ff;
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        /* Основной контент */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Карточки */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border-left: 5px solid var(--primary);
+        }
+        
+        .card h2 {
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.6rem;
+        }
+        
+        .card h2 i {
+            color: var(--primary);
+        }
+        
+        /* Расписание */
         .schedule-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
         }
         
         .schedule-table th {
-            background-color: #4a6fa5;
+            background: linear-gradient(to bottom, var(--primary), var(--primary-dark));
             color: white;
-            padding: 12px;
+            padding: 16px 12px;
             text-align: center;
-            border: 1px solid #3a5a8a;
+            font-weight: 600;
+            border: 1px solid var(--primary-dark);
         }
         
         .schedule-table td {
-            padding: 12px;
-            border: 1px solid #ddd;
+            padding: 14px 12px;
+            border: 1px solid #e0e0e0;
             vertical-align: top;
         }
         
-        .lesson-number {
-            font-weight: bold;
-            color: #2c3e6d;
-        }
-        
-        .activities-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
-            margin: 20px 0;
-        }
-        
-        .activity-item {
-            background-color: #f0f7ff;
-            padding: 12px;
-            border-radius: 6px;
-            border-left: 4px solid #4a6fa5;
-        }
-        
-        .qr-section {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        
-        #qrCodeImage {
-            width: 200px;
-            height: 200px;
-            border: 2px solid white;
-            border-radius: 8px;
-            margin: 10px 0;
-        }
-        
-        .controls-section {
+        .lesson {
             display: flex;
-            justify-content: center;
+            align-items: flex-start;
             gap: 10px;
-            margin: 20px 0;
         }
         
-        button {
-            background-color: #4a6fa5;
+        .lesson-number {
+            background: var(--primary);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        /* Домашние задания */
+        .homework-form {
+            background: #f8fbff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border: 2px dashed #cce5ff;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .priority-select {
+            width: 120px;
+        }
+        
+        .btn {
+            background: linear-gradient(to bottom, var(--primary), var(--primary-dark));
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 14px 28px;
+            border-radius: 8px;
             cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
         }
         
-        button:hover {
-            background-color: #3a5a8a;
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
-        .site-footer {
-            background-color: #2c3e6d;
-            color: white;
+        .btn-success {
+            background: linear-gradient(to bottom, #28a745, #1e7e34);
+        }
+        
+        /* Список заданий */
+        .homework-list {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .homework-item {
+            background: white;
             padding: 20px;
-            text-align: center;
+            border-radius: 10px;
+            border-left: 5px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        
+        .homework-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .homework-item.priority-high {
+            border-left-color: var(--danger);
+        }
+        
+        .homework-item.priority-medium {
+            border-left-color: var(--warning);
+        }
+        
+        .homework-item.priority-low {
+            border-left-color: #17a2b8;
+        }
+        
+        .homework-info {
+            flex: 1;
+        }
+        
+        .homework-subject {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: var(--primary-dark);
+            margin-bottom: 5px;
+        }
+        
+        .homework-task {
+            margin-bottom: 8px;
+            color: #555;
+        }
+        
+        .homework-due {
+            font-size: 0.9rem;
+            color: #777;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .homework-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+        }
+        
+        .btn-icon.complete {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .btn-icon.delete {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .btn-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Состояние выполнено */
+        .homework-item.completed {
+            opacity: 0.7;
+            background-color: #f8f9fa;
+        }
+        
+        .homework-item.completed .homework-subject,
+        .homework-item.completed .homework-task {
+            text-decoration: line-through;
+            color: #999;
+        }
+        
+        /* Статистика */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
             margin-top: 20px;
         }
         
-        @media (max-width: 768px) {
-            .main-nav {
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .stat-card i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .stat-number {
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: var(--primary-dark);
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        /* Футер */
+        footer {
+            background: var(--primary-dark);
+            color: white;
+            padding: 25px;
+            border-radius: 0 0 15px 15px;
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .footer-links a:hover {
+            color: #ffcc00;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 992px) {
+            .header-content {
                 flex-direction: column;
-                align-items: center;
+                text-align: center;
             }
             
+            .date-display {
+                text-align: center;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                min-width: 150px;
+                flex: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
             .schedule-table {
                 font-size: 14px;
             }
+            
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .form-group {
+                min-width: 100%;
+            }
+            
+            .homework-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .homework-actions {
+                align-self: flex-end;
+            }
+        }
+        
+        /* Анимации */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header class="site-header">
-            <h1><i class="fas fa-school"></i> Расписание уроков</h1>
-            <p>Школьное расписание на неделю</p>
+        <!-- Шапка сайта -->
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <div>
+                        <h1>Школьный Органайзер</h1>
+                        <p>Умный помощник для успешной учебы</p>
+                    </div>
+                </div>
+                <div class="date-display">
+                    <div class="current-date" id="currentDate"></div>
+                    <div class="current-time" id="currentTime"></div>
+                </div>
+            </div>
         </header>
         
-        <nav class="main-nav">
-            <a href="#" class="active"><i class="fas fa-calendar-alt"></i> Расписание</a>
-            <a href="#"><i class="fas fa-book"></i> Домашние задания</a>
-            <a href="#"><i class="fas fa-chalkboard-teacher"></i> Учителя</a>
-        </nav>
+        <!-- Навигация -->
+        <div class="tabs">
+            <div class="tab active" data-tab="schedule">
+                <i class="fas fa-calendar-alt"></i> Расписание
+            </div>
+            <div class="tab" data-tab="homework">
+                <i class="fas fa-book"></i> Домашние задания
+            </div>
+            <div class="tab" data-tab="habits">
+                <i class="fas fa-chart-line"></i> Привычки
+            </div>
+            <div class="tab" data-tab="timer">
+                <i class="fas fa-clock"></i> Таймер
+            </div>
+            <div class="tab" data-tab="stats">
+                <i class="fas fa-chart-bar"></i> Статистика
+            </div>
+        </div>
         
-        <main class="main-content">
-            <h2>Расписание на текущую неделю</h2>
-            
-            <table class="schedule-table">
-                <thead>
-                    <tr>
-                        <th>Понедельник</th>
-                        <th>Вторник</th>
-                        <th>Среда</th>
-                        <th>Четверг</th>
-                        <th>Пятница</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><span class="lesson-number">1.</span> Разговор о важном</td>
-                        <td><span class="lesson-number">1.</span> Математика</td>
-                        <td><span class="lesson-number">1.</span> Физ-ра</td>
-                        <td><span class="lesson-number">1.</span> Математика</td>
-                        <td><span class="lesson-number">1.</span> Музыка</td>
-                    </tr>
-                    <tr>
-                        <td><span class="lesson-number">2.</span> Математика</td>
-                        <td><span class="lesson-number">2.</span> Русский язык</td>
-                        <td><span class="lesson-number">2.</span> Русский язык</td>
-                        <td><span class="lesson-number">2.</span> Русский язык</td>
-                        <td><span class="lesson-number">2.</span> Физ-ра</td>
-                    </tr>
-                    <tr>
-                        <td><span class="lesson-number">3.</span> Русский язык</td>
-                        <td><span class="lesson-number">3.</span> Окружающий</td>
-                        <td><span class="lesson-number">3.</span> Чтение</td>
-                        <td><span class="lesson-number">3.</span> Окружающий</td>
-                        <td><span class="lesson-number">3.</span> Математика</td>
-                    </tr>
-                    <tr>
-                        <td><span class="lesson-number">4.</span> Чтение</td>
-                        <td><span class="lesson-number">4.</span> Чтение</td>
-                        <td><span class="lesson-number">4.</span> ИЗО</td>
-                        <td><span class="lesson-number">4.</span> Чтение</td>
-                        <td><span class="lesson-number">4.</span> Русский</td>
-                    </tr>
-                    <tr>
-                        <td><span class="lesson-number">5.</span> Труд</td>
-                        <td><span class="lesson-number">5.</span> Кубановедение</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <h3>Внеурочные занятия</h3>
-            <div class="activities-grid">
-                <div class="activity-item">Лёгкая атлетика</div>
-                <div class="activity-item">Футбол</div>
-                <div class="activity-item">Футбол</div>
-                <div class="activity-item">Вокал</div>
-                <div class="activity-item">Лёгкая атлетика</div>
-                <div class="activity-item">Футбол</div>
+        <!-- Вкладка 1: Расписание (Полностью обновлено) -->
+        <div class="tab-content active" id="schedule">
+            <div class="card">
+                <h2><i class="fas fa-calendar-week"></i> Расписание уроков</h2>
+                
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>Понедельник</th>
+                            <th>Вторник</th>
+                            <th>Среда</th>
+                            <th>Четверг</th>
+                            <th>Пятница</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Урок 1 -->
+                        <tr>
+                            <td>
+                                <div class="lesson">
+                                    <div class="lesson-number">1</div>
+                                    <div>Окружающий мир</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="lesson">
+                                    <div class="lesson-number">1</div>
+                                    <div>Русский язык</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="lesson">
+                                    <div class="lesson-number">1</div>
+                                    <div>Математика</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="lesson">
+                                    <div class="lesson-number">1</div>
+                                    <div>Физическая культура</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="lesson">
+                                    <div class="lesson-number">1</div>
+                                    <div>Музыка</div>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- Урок 2 -->
+                        <tr>
+                            <td>
+                                <div class="lesson">
+                                    <div class="lesson-number">2</div>
+                                    <div>Физическая культура</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="lesson">
+                                    <div class="lesson-number">2</div>
+                                    <div>Математика</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="lesson">
+                                    <div class="lesson-number">2</div>
+                                    <div>Русский язык</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="lesson">
+                                    <div class="lesson-number">2</div>
+                                    <div>Математика</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="lesson">
+                                    <div class="lesson-number">2</div>
+                                    <div>Физическая культура</div>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- Урок 3 -->
+                        <tr>
+                            <td>
+                                <div class="lesson">
+                                    <div class="lesson-number">3</div>
+                                    <div>Математика</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="lesson">
+                                    <div class="lesson-number">3</div>
+                                    <div>Литературное чтение</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="lesson">
+                                    <div class="lesson-number">3</div>
+                                    <div>Изобразительное искусство</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="lesson">
+                                    <div class="lesson-number">3</div>
+                                    <div>Русский язык</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="lesson">
+                                    <div class="lesson-number">3</div>
+                                    <div>Математика</div>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- Урок 4 -->
+                        <tr>
+                            <td>
+                                <div class="lesson">
+                                    <div class="lesson-number">4</div>
+                                    <div>Русский язык</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="lesson">
+                                    <div class="lesson-number">4</div>
+                                    <div>Физическая культура</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="lesson">
+                                    <div class="lesson-number">4</div>
+                                    <div>Окружающий мир</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="lesson">
+                                    <div class="lesson-number">4</div>
+                                    <div>Окружающий мир</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="lesson">
+                                    <div class="lesson-number">4</div>
+                                    <div>Русский язык</div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
             
-            <div class="qr-section">
-                <h3>QR-код сайта</h3>
-                <p>Отсканируйте для доступа с телефона:</p>
-                <img id="qrCodeImage" src="" alt="QR-код">
-                <div class="qr-links">
-                    <p>Ссылка: <span id="siteLink"></span></p>
-                    <button onclick="copyLink()" class="copy-btn">Копировать ссылку</button>
+            <div class="card">
+                <h2><i class="fas fa-futbol"></i> Внеурочные занятия</h2>
+                <div class="activities-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
+                    <div style="background: #e8f4ff; padding: 15px; border-radius: 8px; text-align: center;">
+                        <i class="fas fa-running" style="color: #4a6fa5; font-size: 1.5rem;"></i>
+                        <div style="font-weight: bold; margin-top: 10px;">Лёгкая атлетика</div>
+                    </div>
+                    <div style="background: #e8f4ff; padding: 15px; border-radius: 8px; text-align: center;">
+                        <i class="fas fa-futbol" style="color: #4a6fa5; font-size: 1.5rem;"></i>
+                        <div style="font-weight: bold; margin-top: 10px;">Футбол</div>
+                    </div>
+                    <div style="background: #e8f4ff; padding: 15px; border-radius: 8px; text-align: center;">
+                        <i class="fas fa-music" style="color: #4a6fa5; font-size: 1.5rem;"></i>
+                        <div style="font-weight: bold; margin-top: 10px;">Вокал</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Вкладка 2: Домашние задания -->
+        <div class="tab-content" id="homework">
+            <div class="card">
+                <h2><i class="fas fa-plus-circle"></i> Добавить новое задание</h2>
+                
+                <div class="homework-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="subject">Предмет</label>
+                            <select id="subject">
+                                <option value="">Выберите предмет</option>
+                                <option value="Математика">Математика</option>
+                                <option value="Русский язык">Русский язык</option>
+                                <option value="Литературное чтение">Литературное чтение</option>
+                                <option value="Окружающий мир">Окружающий мир</option>
+                                <option value="Изобразительное искусство">Изобразительное искусство</option>
+                                <option value="Музыка">Музыка</option>
+                                <option value="Физическая культура">Физическая культура</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="dueDate">Срок выполнения</label>
+                            <input type="date" id="dueDate">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="priority">Приоритет</label>
+                            <select id="priority" class="priority-select">
+                                <option value="low">Низкий</option>
+                                <option value="medium" selected>Средний</option>
+                                <option value="high">Высокий</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="task">Задание</label>
+                        <textarea id="task" rows="3" placeholder="Опишите задание..."></textarea>
+                    </div>
+                    
+                    <button class="btn btn-success" id="addHomework">
+                        <i class="fas fa-save"></i> Сохранить задание
+                    </button>
                 </div>
             </div>
             
-            <div class="controls-section">
-                <button onclick="window.print()">Печать</button>
-                <button onclick="saveAsPDF()">Сохранить как PDF</button>
+            <div class="card">
+                <h2><i class="fas fa-tasks"></i> Список заданий</h2>
+                <div class="homework-list" id="homeworkList">
+                    <!-- Задания будут добавляться сюда -->
+                    <div class="homework-item priority-high">
+                        <div class="homework-info">
+                            <div class="homework-subject">Математика</div>
+                            <div class="homework-task">Решить задачи №125-130 на странице 45</div>
+                            <div class="homework-due">
+                                <i class="far fa-calendar"></i>
+                                <span>До завтра (10.01.2026)</span>
+                            </div>
+                        </div>
+                        <div class="homework-actions">
+                            <button class="btn-icon complete" title="Отметить выполненным">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn-icon delete" title="Удалить">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="homework-item priority-medium completed">
+                        <div class="homework-info">
+                            <div class="homework-subject">Русский язык</div>
+                            <div class="homework-task">Упражнение 54, списать текст</div>
+                            <div class="homework-due">
+                                <i class="far fa-calendar"></i>
+                                <span>Выполнено сегодня</span>
+                            </div>
+                        </div>
+                        <div class="homework-actions">
+                            <button class="btn-icon complete" title="Вернуть в работу">
+                                <i class="fas fa-undo"></i>
+                            </button>
+                            <button class="btn-icon delete" title="Удалить">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </main>
+        </div>
         
-        <footer class="site-footer">
-            <!-- Здесь были удаленные строки -->
+        <!-- Вкладка 5: Статистика -->
+        <div class="tab-content" id="stats">
+            <div class="card">
+                <h2><i class="fas fa-chart-bar"></i> Статистика успеваемости</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="fas fa-tasks"></i>
+                        <div class="stat-number" id="totalHomework">12</div>
+                        <div class="stat-label">Всего заданий</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="stat-number" id="completedHomework">8</div>
+                        <div class="stat-label">Выполнено</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <i class="fas fa-clock"></i>
+                        <div class="stat-number" id="pendingHomework">4</div>
+                        <div class="stat-label">Осталось</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <i class="fas fa-percentage"></i>
+                        <div class="stat-number" id="completionRate">67%</div>
+                        <div class="stat-label">Процент выполнения</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Футер -->
+        <footer>
+            <p>© 2024 Школьный Органайзер • Все права защищены</p>
+            <p>Сайт создан с использованием HTML, CSS и JavaScript • Хостинг: GitHub Pages</p>
+            
+            <div class="footer-links">
+                <a href="#"><i class="fas fa-print"></i> Печать</a>
+                <a href="#"><i class="fas fa-download"></i> Экспорт</a>
+                <a href="#"><i class="fas fa-cog"></i> Настройки</a>
+                <a href="#"><i class="fas fa-question-circle"></i> Помощь</a>
+            </div>
         </footer>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // QR-код
-            const currentUrl = window.location.href;
-            document.getElementById('siteLink').textContent = currentUrl;
+        // Обновление даты и времени
+        function updateDateTime() {
+            const now = new Date();
             
-            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(currentUrl)}`;
-            document.getElementById('qrCodeImage').src = qrCodeUrl;
+            // Форматирование даты
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            document.getElementById('currentDate').textContent = 
+                now.toLocaleDateString('ru-RU', options);
             
-            // Подсветка дня
-            const today = new Date().getDay();
-            const dayIndex = today === 0 ? 6 : today - 1;
-            
-            if (dayIndex >= 0 && dayIndex <= 4) {
-                const table = document.querySelector('.schedule-table');
-                if (table) {
-                    const rows = table.querySelectorAll('tr');
-                    rows.forEach(row => {
-                        const cell = row.cells[dayIndex];
-                        if (cell) {
-                            cell.style.backgroundColor = '#e8f4ff';
-                        }
-                    });
-                }
-            }
+            // Форматирование времени
+            const timeOptions = { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            };
+            document.getElementById('currentTime').textContent = 
+                now.toLocaleTimeString('ru-RU', timeOptions);
+        }
+        
+        // Обновляем каждую секунду
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+        
+        // Переключение вкладок
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Убираем активный класс у всех вкладок
+                document.querySelectorAll('.tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                
+                // Скрываем все содержимое вкладок
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Активируем текущую вкладку
+                this.classList.add('active');
+                
+                // Показываем соответствующее содержимое
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
         });
         
-        function copyLink() {
-            const link = window.location.href;
-            navigator.clipboard.writeText(link).then(() => {
-                alert('Ссылка скопирована!');
+        // Система домашних заданий
+        let homeworkList = [
+            {
+                id: 1,
+                subject: 'Математика',
+                task: 'Решить задачи №125-130 на странице 45',
+                dueDate: '2026-01-10',
+                priority: 'high',
+                completed: false
+            },
+            {
+                id: 2,
+                subject: 'Русский язык',
+                task: 'Упражнение 54, списать текст',
+                dueDate: '2026-01-09',
+                priority: 'medium',
+                completed: true
+            }
+        ];
+        
+        // Добавление нового задания
+        document.getElementById('addHomework').addEventListener('click', function() {
+            const subject = document.getElementById('subject').value;
+            const task = document.getElementById('task').value;
+            const dueDate = document.getElementById('dueDate').value;
+            const priority = document.getElementById('priority').value;
+            
+            if (!subject || !task || !dueDate) {
+                alert('Пожалуйста, заполните все поля!');
+                return;
+            }
+            
+            const newHomework = {
+                id: Date.now(),
+                subject,
+                task,
+                dueDate,
+                priority,
+                completed: false
+            };
+            
+            homeworkList.push(newHomework);
+            renderHomeworkList();
+            updateStats();
+            
+            // Очистка формы
+            document.getElementById('subject').value = '';
+            document.getElementById('task').value = '';
+            document.getElementById('dueDate').value = '';
+            document.getElementById('priority').value = 'medium';
+            
+            // Показываем уведомление
+            showNotification('Задание успешно добавлено!', 'success');
+        });
+        
+        // Отображение списка заданий
+        function renderHomeworkList() {
+            const container = document.getElementById('homeworkList');
+            container.innerHTML = '';
+            
+            // Сортируем задания: сначала невыполненные, потом выполненные
+            homeworkList.sort((a, b) => {
+                if (a.completed !== b.completed) {
+                    return a.completed ? 1 : -1;
+                }
+                return new Date(a.dueDate) - new Date(b.dueDate);
+            });
+            
+            homeworkList.forEach(homework => {
+                const dueDate = new Date(homework.dueDate);
+                const today = new Date();
+                const diffTime = dueDate - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                let dueText = '';
+                if (homework.completed) {
+                    dueText = 'Выполнено';
+                } else if (diffDays === 0) {
+                    dueText = 'Сегодня';
+                } else if (diffDays === 1) {
+                    dueText = 'Завтра';
+                } else if (diffDays < 0) {
+                    dueText = 'Просрочено';
+                } else {
+                    dueText = `Через ${diffDays} дней`;
+                }
+                
+                const item = document.createElement('div');
+                item.className = `homework-item priority-${homework.priority} ${homework.completed ? 'completed' : ''}`;
+                item.innerHTML = `
+                    <div class="homework-info">
+                        <div class="homework-subject">${homework.subject}</div>
+                        <div class="homework-task">${homework.task}</div>
+                        <div class="homework-due">
+                            <i class="far fa-calendar"></i>
+                            <span>${dueText} (${dueDate.toLocaleDateString('ru-RU')})</span>
+                        </div>
+                    </div>
+                    <div class="homework-actions">
+                        <button class="btn-icon complete" title="${homework.completed ? 'Вернуть в работу' : 'Отметить выполненным'}" data-id="${homework.id}">
+                            <i class="fas fa-${homework.completed ? 'undo' : 'check'}"></i>
+                        </button>
+                        <button class="btn-icon delete" title="Удалить" data-id="${homework.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(item);
+            });
+            
+            // Добавляем обработчики событий для новых кнопок
+            document.querySelectorAll('.btn-icon.complete').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    toggleHomeworkComplete(id);
+                });
+            });
+            
+            document.querySelectorAll('.btn-icon.delete').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    deleteHomework(id);
+                });
             });
         }
         
-        function saveAsPDF() {
-            window.print();
+        // Переключение статуса выполнения
+        function toggleHomeworkComplete(id) {
+            const homework = homeworkList.find(h => h.id === id);
+            if (homework) {
+                homework.completed = !homework.completed;
+                renderHomeworkList();
+                updateStats();
+                
+                showNotification(
+                    homework.completed 
+                        ? 'Задание отмечено как выполненное!' 
+                        : 'Задание возвращено в работу',
+                    'success'
+                );
+            }
         }
-    </script>
-</body>
-</html>
+        
+        // Удаление задания
+        function deleteHomework(id) {
+            if (confirm('Вы уверены, что хотите удалить это задание?')) {
+                homeworkList = homeworkList.filter(h => h.id !== id);
+                renderHomeworkList();
+                updateStats();
+                showNotification('Задание удалено', 'info');
+            }
+        }
+        
+        // Обновление статистики
+        function updateStats() {
+            const total = homeworkList.length;
+            const completed = homeworkList.filter(h => h.completed).length;
+            const pending = total - completed;
+            const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            document.getElementById('totalHomework').textContent = total;
+            document.getElementById('completedHomework').textContent = completed;
+            document.getElementById('pendingHomework').textContent = pending;
+            document.getElementById('completionRate').textContent = rate + '%';
+        }
+        
+        // Показ уведомлений
+        function showNotification(message, type = 'info') {
+            // Создаем уведомление
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            notification.textContent = message;
+            
+            // Добавляем анимацию
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(notification);
+            
+            // Удаляем через 3 секунды
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out forwards';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        // Подсветка текущего дня в расписании
+        function highlightCurrentDay() {
+            const today = new Date().getDay();
+            // Преобразуем: 1=понедельник, 2=вторник, ..., 5=пятница, 0=во
